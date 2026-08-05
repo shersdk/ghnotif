@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GH Notify</title>
+    <link rel="stylesheet" href="/src/styles.css" />
+  </head>
+  <body>
+    <div class="app">
+      <header class="topbar glass">
+        <div class="brand">
+          <div class="logo"></div>
+          <h1>GH Notify</h1>
+          <span class="status-dot" id="statusDot" title="Idle"></span>
+        </div>
+        <form id="addForm" class="add-form" autocomplete="off">
+          <input
+            id="repoInput"
+            type="text"
+            placeholder="owner/repo or https://github.com/owner/repo"
+            spellcheck="false"
+          />
+          <button id="addBtn" type="submit">Watch</button>
+        </form>
+      </header>
+
+      <main class="feed" id="feed">
+        <div class="empty-state" id="emptyState">
+          <div class="empty-icon"></div>
+          <p>No repos watched yet.</p>
+          <span>Enter a repository above to get notified on every commit.</span>
+        </div>
+      </main>
+
+      <footer class="statusbar glass">
+        <span id="statusText">idle</span>
+      </footer>
+    </div>
+
+    <div class="toast-stack" id="toasts"></div>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
