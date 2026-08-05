@@ -1,18 +1,20 @@
 # GH Notify
 
-A minimal, lightweight desktop app that watches a GitHub repository and notifies you the moment anyone commits — even while it runs quietly in the background.
+A minimal, lightweight desktop app that watches a GitHub repository and notifies you the moment anyone commits, even while it runs quietly in the background.
 
-Built with [Tauri 2](https://tauri.app) and vanilla TypeScript, with an Apple-style liquid-glass dark UI. No account, no login, no database — just paste a repo and go.
+Built with [Tauri 2](https://tauri.app) and vanilla TypeScript, with an Apple-style liquid-glass dark UI. No account, no login, no database. Just paste a repo and go.
+
+I built this for myself. I was refreshing a repository over and over waiting for a push, and I wanted a tiny thing sitting in the tray that would tell me the second a new commit landed so I could stop checking.
 
 ## Features
 
-- **Instant commit notifications** — native system notification + an animated in-app row for every new commit on any branch.
-- **Runs in the background** — minimize to the system tray and keep polling while you work.
-- **Zero-login** — watch any public repo instantly; private repos and a higher rate limit are one optional token away.
-- **Tracks all branches** — detects pushes to any branch, not just the default.
-- **Liquid-glass dark UI** — translucent window with acrylic/mica backdrop, hairline commit rows, and spring-based animations.
-- **Persists watched repos** — your watch list and last-known commits survive restarts.
-- **Tiny footprint** — a single ~5 MB native binary, far lighter than Electron.
+- **Instant commit notifications** - native system notification plus an animated in-app row for every new commit on any branch.
+- **Runs in the background** - minimize to the system tray and keep polling while you work.
+- **Zero-login** - watch any public repo instantly; private repos and a higher rate limit are one optional token away.
+- **Tracks all branches** - detects pushes to any branch, not just the default.
+- **Liquid-glass dark UI** - translucent window with acrylic/mica backdrop, hairline commit rows, and spring-based animations.
+- **Persists watched repos** - your watch list and last-known commits survive restarts.
+- **Tiny footprint** - a single ~5 MB native binary, far lighter than Electron.
 
 ## Getting Started
 
