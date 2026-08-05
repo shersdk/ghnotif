@@ -8,34 +8,37 @@
   </head>
   <body>
     <div class="app">
-      <header class="topbar glass">
-        <div class="brand">
+      <div class="titlebar" data-tauri-drag-region>
+        <div class="titlebar-left">
           <div class="logo"></div>
-          <h1>GH Notify</h1>
-          <span class="status-dot" id="statusDot" title="Idle"></span>
+          <span class="app-name">GH Notify</span>
         </div>
+        <div class="titlebar-right">
+          <span class="live-dot" id="liveDot" title="Idle"></span>
+        </div>
+      </div>
+
+      <div class="input-row">
         <form id="addForm" class="add-form" autocomplete="off">
           <input
             id="repoInput"
             type="text"
-            placeholder="owner/repo or https://github.com/owner/repo"
+            placeholder="owner/repo or github.com/owner/repo"
             spellcheck="false"
           />
-          <button id="addBtn" type="submit">Watch</button>
+          <button id="addBtn" class="add-btn" type="submit" aria-label="Watch repository">
+            <span class="plus"></span>
+          </button>
         </form>
-      </header>
+      </div>
 
       <main class="feed" id="feed">
         <div class="empty-state" id="emptyState">
-          <div class="empty-icon"></div>
-          <p>No repos watched yet.</p>
-          <span>Enter a repository above to get notified on every commit.</span>
+          <div class="empty-glyph"></div>
+          <p>Watch a repository</p>
+          <span>Enter a repo above to get notified the moment anyone commits.</span>
         </div>
       </main>
-
-      <footer class="statusbar glass">
-        <span id="statusText">idle</span>
-      </footer>
     </div>
 
     <div class="toast-stack" id="toasts"></div>

@@ -52,6 +52,12 @@ pub fn run() {
 
             if let Some(window) = app.get_webview_window("main") {
                 let win = window.clone();
+
+                #[cfg(target_os = "windows")]
+                {
+                    let _ = window_vibrancy::apply_mica(&window, Some(true));
+                }
+
                 window.on_window_event(move |event| {
                     if let tauri::WindowEvent::CloseRequested { api, .. } = event {
                         api.prevent_close();

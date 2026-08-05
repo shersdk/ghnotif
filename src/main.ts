@@ -22,13 +22,11 @@ const emptyState = document.getElementById("emptyState") as HTMLElement;
 const addForm = document.getElementById("addForm") as HTMLFormElement;
 const repoInput = document.getElementById("repoInput") as HTMLInputElement;
 const addBtn = document.getElementById("addBtn") as HTMLButtonElement;
-const statusDot = document.getElementById("statusDot") as HTMLElement;
-const statusText = document.getElementById("statusText") as HTMLElement;
+const statusDot = document.getElementById("liveDot") as HTMLElement;
 const toasts = document.getElementById("toasts") as HTMLElement;
 
 let repos: WatchedRepo[] = [];
 let polling = false;
-let pollCount = 0;
 
 function log(line: string): void {
   const ts = new Date().toISOString();
@@ -47,18 +45,6 @@ function shortSha(sha: string): string {
   return sha.slice(0, 7);
 }
 
-function timeAgo(date: string): string {
-  const ms = Date.now() - new Date(date).getTime();
-  const s = Math.floor(ms / 1000);
-  if (s < 60) return "just now";
-  const m = Math.floor(s / 60);
-  if (m < 60) return `${m}m ago`;
-  const h = Math.floor(m / 60);
-  if (h < 24) return `${h}h ago`;
-  const d = Math.floor(h / 24);
-  return `${d}d ago`;
-}
-
 function initials(name: string): string {
   return name
     .split(/\s+/)
@@ -68,38 +54,35 @@ function initials(name: string): string {
     .join("");
 }
 
-function setStatus(status: Status, text: string): void {
-  statusDot.className = `status-dot ${status === "idle" ? "" : status}`;
-  statusText.textContent = text;
+function setStatus(status: Status): void {
+  statusDot.className = `live-dot ${status === "idle" ? "" : status}`;
 }
 
 function render(): void {
   if (repos.length === 0) {
     emptyState.style.display = "flex";
-    feed.querySelectorAll(".repo-block").forEach((el) => el.remove());
+    feed.querySelectorAll(".section").forEach((el) => el.remove());
     return;
   }
   emptyState.style.display = "none";
 
-  feed
-    .querySelectorAll(".repo-block")
-    .forEach((el) => el.remove());
+  feed.querySelectorAll(".section").forEach((el) => el.remove());
 
   repos.forEach((repo) => {
-    const block = document.createElement("div");
-    block.className = "repo-block";
-    const header = document.createElement("div");
-    header.className = "repo-header glass";
-    header.innerHTML = `
-      <span class="repo-name">${esc(repo.full_name)}</span>
+    const section = document.createElement("section");
+    section.className = "section";
+    const label = document.createElement("div");
+    label.className = "section-label";
+    label.innerHTML = `
+      <span>${esc(repo.full_name)}</span>
       <button class="remove-btn" data-id="${esc(repo.id)}" title="Stop watching">✕</button>
     `;
-    const commits = document.createElement("div");
-    commits.className = "repo-commits";
-    commits.dataset.repo = repo.id;
-    block.appendChild(header);
-    block.appendChild(commits);
-    feed.appendChild(block);
+    const rows = document.createElement("div");
+    rows.className = "repo-rows";
+    rows.dataset.repo = repo.id;
+    section.appendChild(label);
+    section.appendChild(rows);
+    feed.appendChild(section);
   });
 
   feed.querySelectorAll(".remove-btn").forEach((btn) => {
@@ -113,7 +96,7 @@ function render(): void {
 }
 
 function addCommitCard(repo: WatchedRepo, commit: Commit): void {
-  const container = feed.querySelector<HTMLElement>(`.repo-commits[data-repo="${repo.id}"]`);
+  const container = feed.querySelector<HTMLElement>(`.repo-rows[data-repo="${repo.id}"]`);
   if (!container) return;
 
   const avatar = commit.author.avatar_url
@@ -121,24 +104,21 @@ function addCommitCard(repo: WatchedRepo, commit: Commit): void {
     : "";
   const hasImg = !!commit.author.avatar_url;
 
-  const card = document.createElement("article");
-  card.className = "commit is-new";
-  card.innerHTML = `
+  const row = document.createElement("article");
+  row.className = "commit is-new";
+  row.innerHTML = `
     <div class="avatar ${hasImg ? "" : "fallback"}" style="${avatar}">${hasImg ? "" : esc(initials(commit.author.name))}</div>
     <div class="commit-body">
-      <div class="commit-msg">${esc(commit.message)}</div>
-      <div class="commit-meta">
-        <span class="branch-badge">${esc(commit.branch)}</span>
-        <span class="author">${esc(commit.author.name)}</span>
-        <span class="repo-tag">${esc(repo.full_name)}</span>
-        <span>${timeAgo(commit.date)}</span>
-        <span class="sha">${shortSha(commit.sha)}</span>
-      </div>
+      <span class="commit-msg">${esc(commit.message)}</span>
+    </div>
+    <div class="commit-meta">
+      <span class="branch-badge">${esc(commit.branch)}</span>
+      <span class="author">${esc(commit.author.name)}</span>
+      <span class="sha">${shortSha(commit.sha)}</span>
     </div>
   `;
 
-  container.prepend(card);
-  requestAnimationFrame(() => card.classList.add("flash"));
+  container.prepend(row);
 }
 
 function addToast(title: string, body: string): void {
@@ -234,8 +214,7 @@ async function watchCommits(repo: WatchedRepo, token?: string): Promise<Commit[]
 async function poll(): Promise<void> {
   if (polling || repos.length === 0) return;
   polling = true;
-  pollCount += 1;
-  setStatus("polling", "checking for new commits…");
+  setStatus("polling");
   const token = getToken();
 
   try {
@@ -247,7 +226,7 @@ async function poll(): Promise<void> {
       } catch (err) {
         console.error(err);
         log(`ERROR ${repo.full_name}: ${(err as Error).message}`);
-        setStatus("error", `${repo.full_name}: ${(err as Error).message}`);
+        setStatus("error");
       }
     }
 
@@ -259,7 +238,7 @@ async function poll(): Promise<void> {
       }
     }
 
-    setStatus("online", `watching ${repos.length} repo${repos.length === 1 ? "" : "s"} · check #${pollCount}`);
+    setStatus("online");
   } finally {
     polling = false;
   }
@@ -269,13 +248,13 @@ async function onAddRepo(e: Event): Promise<void> {
   e.preventDefault();
   const parsed = parseRepoInput(repoInput.value);
   if (!parsed) {
-    setStatus("error", "Enter a valid repo, e.g. owner/repo");
+    setStatus("error");
     return;
   }
 
   addBtn.disabled = true;
-  addBtn.textContent = "…";
-  setStatus("polling", `adding ${parsed.owner}/${parsed.repo}…`);
+  addBtn.classList.add("loading");
+  setStatus("polling");
 
   try {
     const token = getToken();
@@ -293,12 +272,15 @@ async function onAddRepo(e: Event): Promise<void> {
     render();
     const newCommits = await watchCommits(repo, token);
     for (const c of newCommits) addCommitCard(repo, c);
-    setStatus("online", `watching ${info.full_name}`);
+    addBtn.classList.remove("loading");
+    addBtn.classList.add("done");
+    setStatus("online");
   } catch (err) {
-    setStatus("error", (err as Error).message);
+    addBtn.classList.remove("loading");
+    setStatus("error");
   } finally {
     addBtn.disabled = false;
-    addBtn.textContent = "Watch";
+    setTimeout(() => addBtn.classList.remove("done"), 1600);
   }
 }
 

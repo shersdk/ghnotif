@@ -1253,6 +1253,7 @@ dependencies = [
  "tauri",
  "tauri-build",
  "tauri-plugin-notification",
+ "window-vibrancy",
 ]
 
 [[package]]
