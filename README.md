@@ -2,7 +2,7 @@
 
 A minimal, lightweight desktop app that watches a GitHub repository and notifies you the moment anyone commits, even while it runs quietly in the background.
 
-Built with [Tauri 2](https://tauri.app) and vanilla TypeScript, with an Apple-style liquid-glass dark UI. No account, no login, no database. Just paste a repo and go.
+Built with [Tauri 2](https://tauri.app) and vanilla TypeScript, dark UI. No account, no login, no database. Just paste a repo and go.
 
 I built this for myself. I was refreshing a repository over and over waiting for a push, and I wanted a tiny thing sitting in the tray that would tell me the second a new commit landed so I could stop checking.
 
