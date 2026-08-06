@@ -6,6 +6,10 @@ Built with [Tauri 2](https://tauri.app) and vanilla TypeScript, with an Apple-st
 
 I built this for myself. I was refreshing a repository over and over waiting for a push, and I wanted a tiny thing sitting in the tray that would tell me the second a new commit landed so I could stop checking.
 
+<img width="424" height="521" alt="image" src="https://github.com/user-attachments/assets/eb477702-8ee3-42f3-bc24-dce10126d503" />
+
+
+
 ## Features
 
 - **Instant commit notifications** - native system notification plus an animated in-app row for every new commit on any branch.
